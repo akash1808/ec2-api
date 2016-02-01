@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 ec2_opts = [
   cfg.StrOpt('cinder_service_type',
-  	       default='volume',
+  	       default='volumev2',
                help='Service type of Cinder Volume API, registered in Keystone catalog.'),
   cfg.StrOpt('volume_api_version',
                default='2',
