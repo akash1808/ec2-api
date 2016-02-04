@@ -1,0 +1,52 @@
+Source: ec2-api
+Priority: optional
+Section: misc
+Maintainer: JioCloud Compute <jiocloudcompute.team@rilcom>
+Build-Depends: python-setuptools, python-all, debhelper
+Build-Depends-Indep: python-pbr (>= 0.6)
+Standards-Version: 3.9.6
+Homepage: https://github.com/JioCloud/monitor-common
+X-Python-Version: >= 2.7
+
+Package: python-ec2-api
+Architecture: all
+Section: python
+Depends: python,
+ python:any (>= 2.7.5-5~),
+ python-glanceclient,
+ python-webob,
+ python-greenlet,
+ python-babel,
+ python-sqlalchemy,
+ python-oslo-db,
+ python-paste,
+ python-pastedeploy,
+ python-eventlet,
+ python-jsonschema,
+ python-oslo-log,
+ python-stevedore,
+ python-anyjson,
+ python (>= 2.7) | python-argparse,
+ python-novaclient,
+ python-iso8601,
+ python-cinderclient,
+ python-pyasn1,
+ python-oslo-config,
+ python-paramiko,
+ python-six,
+ python-oslo-concurrency,
+ python-pyasn1-modules,
+ python-routes,
+ python-migrate,
+ python-pbr,
+ python-neutronclient,
+ python-oslo-serialization,
+ python-boto,
+ python-oslo-utils,
+ python-lxml,
+ python-oslo-messaging,
+ python-httplib2,
+ python-keystoneclient
+Description: EC2 API
+ This provides support for EC2 API over openstack.
+
