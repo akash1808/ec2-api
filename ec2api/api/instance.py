@@ -751,6 +751,7 @@ def _parse_block_device_mapping_v2(context, block_device_mapping,
                                    os_image = None,
                                    os_kernel_id = None,
                                    os_ramdisk_id = None):
+    bdm = {}
     if block_device_mapping is None:
         # No block device mapping is supplied. We still need to
         # boot from volume. Let us figure out the information we
