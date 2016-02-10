@@ -24,6 +24,15 @@ from ec2api.i18n import _, _LW
 
 logger = logging.getLogger(__name__)
 
+ec2_opts = [
+  cfg.StrOpt('cinder_service_type',
+  	       default='volumev2',
+               help='Service type of Cinder Volume API, registered in Keystone catalog.'),
+  cfg.StrOpt('volume_api_version',
+               default='2',
+               help='volume api version'),
+]
+
 CONF = cfg.CONF
 
 
@@ -122,10 +131,10 @@ def glance(context):
 
 def cinder(context):
     if cinderclient is None:
-        return nova(context, 'volume')
+        return nova(context, CONF.cinder_service_type)
 
     args = {
-        'service_type': 'volume',
+        'service_type': CONF.cinder_service_type,
         'auth_url': CONF.keystone_url,
         'username': None,
         'api_key': None,
@@ -133,8 +142,8 @@ def cinder(context):
         'cacert': CONF.ssl_ca_file
     }
 
-    _cinder = cinderclient.Client('1', **args)
-    management_url = _url_for(context, service_type='volume')
+    _cinder = cinderclient.Client(CONF.volume_api_version, **args)
+    management_url = _url_for(context, service_type=CONF.cinder_service_type)
     _cinder.client.auth_token = context.auth_token
     _cinder.client.management_url = management_url
 

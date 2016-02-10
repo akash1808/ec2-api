@@ -118,7 +118,9 @@ def run_instances(context, image_id, instance_count,
         raise exception.InvalidParameterValue(value=instance_type_id,
                                               parameter='InstanceTypeId')
 
-    bdm = _parse_block_device_mapping(context, block_device_mapping)
+    bdm = _parse_block_device_mapping_v2(context, block_device_mapping,
+                                         os_image, os_kernel_id,
+                                         os_ramdisk_id)
     availability_zone = (placement or {}).get('availability_zone')
     if user_data:
         user_data = base64.b64decode(user_data)
@@ -157,7 +159,7 @@ def run_instances(context, image_id, instance_count,
                 min_count=1, max_count=1,
                 kernel_id=os_kernel_id, ramdisk_id=os_ramdisk_id,
                 availability_zone=availability_zone,
-                block_device_mapping=bdm,
+                block_device_mapping_v2=bdm,
                 key_name=key_name, userdata=user_data,
                 **extra_params)
             cleaner.addCleanup(nova.servers.delete, os_instance.id)
@@ -745,6 +747,34 @@ def _parse_image_parameters(context, image_id, kernel_id, ramdisk_id):
     return os_image, os_kernel_id, os_ramdisk_id
 
 
+def _parse_block_device_mapping_v2(context, block_device_mapping,
+                                   os_image = None,
+                                   os_kernel_id = None,
+                                   os_ramdisk_id = None):
+    bdm = {}
+    if block_device_mapping is None:
+        # No block device mapping is supplied. We still need to
+        # boot from volume. Let us figure out the information we
+        # need
+
+        bdm = {
+            "device_name": "/dev/sda1",
+            "boot_index": "0",
+            "source_type": "image",
+            "volume_size": "8",
+            "destination_type": "volume",
+            "delete_on_termination": False
+        }
+
+        if os_image != None and os_image.min_disk > 0:
+            bdm["volume_size"] = str(os_image.min_disk)
+
+        bdm["uuid"] = str(os_image.id)
+
+    return [bdm]
+
+
+# TODO: [varun] This function needs to be deprecated
 def _parse_block_device_mapping(context, block_device_mapping):
     # TODO(ft): check block_device_mapping structure
     bdm = {}
@@ -1189,7 +1219,7 @@ ec2utils.register_auto_create_db_item_extension(
 
 
 # NOTE(ft): following functions are copied from various parts of Nova
-
+# TODO: [varun] This function needs to be deprecated
 def _cloud_parse_block_device_mapping(context, bdm):
     """Parse BlockDeviceMappingItemType into flat hash
 
